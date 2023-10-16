@@ -1,0 +1,22 @@
+metrics:
+  - type: fid
+    model:
+      dims: 2048
+    data:
+      dataset:
+        resize_shape: [256, 512]
+      batch_size: 64
+      num_workers: 16
+
+  - type: fvd
+    model:
+      path: i3d_torchscript.pt
+    data:
+      dataset:
+        sequence_length: 16
+        resize_shape: [256, 512]
+      batch_size: 4
+      num_workers: 16
+
+# num_iters: 1000
+paths: []

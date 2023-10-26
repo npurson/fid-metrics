@@ -37,6 +37,8 @@ from scipy import linalg
 from torch.nn.functional import adaptive_avg_pool2d
 
 from fid_metrics.inception import InceptionV3
+from fid_metrics.inception3d import InceptionI3d
+from fid_metrics.resnet3d import resnet50
 
 
 def build_inception(dims):
@@ -46,8 +48,30 @@ def build_inception(dims):
     return model
 
 
+# def build_inception3d(path):
+#     return torch.jit.load(path)
+
+
 def build_inception3d(path):
-    return torch.jit.load(path)
+    model = InceptionI3d(400, in_channels=3)
+    model.load_state_dict(torch.load(path))
+    return model
+
+
+def build_resnet3d(path, sample_duration=16):
+    model = resnet50(
+        num_classes=400,
+        shortcut_type="B",
+        sample_size=112,
+        sample_duration=sample_duration,
+        last_fc=False)
+    model_sd = torch.load(path, map_location='cpu')
+    model_sd_new = {}
+    for k, v in model_sd['state_dict'].items():
+        model_sd_new[k.replace('module.', '')] = v
+
+    model.load_state_dict(model_sd_new)
+    return model
 
 
 def calculate_act_statistics(act):

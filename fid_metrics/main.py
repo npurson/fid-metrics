@@ -63,9 +63,6 @@ def main(cfg: DictConfig):
         type = metric_cfgs.type
         dls = build_loaders(type, cfg.paths, metric_cfgs.data)
         model = build_model(type, metric_cfgs.model).to(device).eval()
-        forward_kwargs = (
-            dict(rescale=True, resize=True, return_features=True) if type == 'fvd' else {}
-        )
 
         feats = [[], []]
         for i, dl in enumerate(dls):
@@ -79,10 +76,15 @@ def main(cfg: DictConfig):
                 x = next(dl).to(device)
                 if type == 'fid' and x.dim() == 5:
                     x = x.squeeze(0).transpose(0, 1)
+                elif type == 'fvd':
+                    x = x * 2 - 1
                 with torch.no_grad():
-                    pred = model(x, **forward_kwargs)
                     if type == 'fid':
+                        pred = model(x)
                         pred = postprocess_i2d_pred(pred)
+                    elif type == 'fvd':
+                        pred = model.extract_features(x)
+                        pred = pred.squeeze(3).squeeze(3).mean(2)
                 feats[i].append(pred.cpu().numpy())
             feats[i] = np.concatenate(feats[i], axis=0)
         fid = calculate_fid(*feats)

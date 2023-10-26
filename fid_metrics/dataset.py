@@ -54,7 +54,7 @@ class ImageSequenceDataset(Dataset):
         self,
         image_dirs,
         sequence_length=16,
-        resize_shape=(256, 512),
+        resize_shape=(224, 224),
         ext='jpg',
         no_overlap=True,
     ):
@@ -93,7 +93,7 @@ class ImageSequenceDataset(Dataset):
 
 
 class VideoDataset(Dataset):
-    def __init__(self, video_path, sequence_length=16, resize_shape=(256, 512), no_overlap=True):
+    def __init__(self, video_path, sequence_length=16, resize_shape=(224, 224), no_overlap=True):
         self.video_paths = glob.glob(video_path)
         self.sequence_length = sequence_length
         self.no_overlap = no_overlap

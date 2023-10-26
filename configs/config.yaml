@@ -10,11 +10,11 @@ metrics:
 
   - type: fvd
     model:
-      path: i3d_torchscript.pt
+      path: i3d_pretrained_400.pt
     data:
       dataset:
         sequence_length: 16
-        resize_shape: [256, 512]
+        resize_shape: [224, 224]
       batch_size: 4
       num_workers: 16
 

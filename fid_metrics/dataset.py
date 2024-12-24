@@ -104,13 +104,13 @@ class VideoDataset(Dataset):
         for video_path in self.video_paths:
             cap = cv2.VideoCapture(video_path)
             num_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-
-            total_frames += num_frames
-            self.num_accum_sequences.append(
-                (total_frames // sequence_length)
-                if no_overlap
-                else (total_frames - sequence_length + 1)
-            )
+            num_sequences = (
+                (num_frames // sequence_length) if no_overlap
+                else (num_frames - sequence_length + 1))
+            if len(self.num_accum_sequences) > 0:
+                self.num_accum_sequences.append(self.num_accum_sequences[-1] + num_sequences)
+            else:
+                self.num_accum_sequences.append(num_sequences)
             cap.release()
         print(f'Loaded {len(self.video_paths)} video files, {total_frames} frames total')
 
@@ -118,9 +118,9 @@ class VideoDataset(Dataset):
         return self.num_accum_sequences[-1]
 
     def __getitem__(self, idx):
-        video_idx = bisect.bisect_left(self.num_accum_sequences, idx)
+        video_idx = bisect.bisect_left(self.num_accum_sequences, idx + 1)
         video_path = self.video_paths[video_idx]
-        frame_idx = idx - self.num_accum_sequences[video_idx]
+        frame_idx = idx - self.num_accum_sequences[video_idx - 1] if video_idx > 0 else 0
         if self.no_overlap:
             frame_idx *= self.sequence_length
 

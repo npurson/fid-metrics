@@ -24,6 +24,8 @@ In the absence of setting up the package, users can currently utilize it by the 
     python fid_metrics/main.py paths=[path1,path2]
     ```
 
+    `path1`, `path2` can either be images, videos, folders of images or pathnames of the aforementioned that match the pattern of `glob`.
+
 ## Acknowledgements
 
 The code in this repository is based on [pytorch-fid](https://github.com/mseitzer/pytorch-fid) and [fvd-comparison](https://github.com/universome/fvd-comparison).

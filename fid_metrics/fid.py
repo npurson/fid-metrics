@@ -52,9 +52,12 @@ def build_inception(dims):
 #     return torch.jit.load(path)
 
 
-def build_inception3d(path):
-    model = InceptionI3d(400, in_channels=3)
-    model.load_state_dict(torch.load(path))
+def build_inception3d(type, path):
+    if type == 'videogpt':
+        model = InceptionI3d(400, in_channels=3)
+        model.load_state_dict(torch.load(path))
+    elif type == 'styleganv':
+        model = torch.jit.load(path)
     return model
 
 

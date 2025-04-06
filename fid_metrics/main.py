@@ -47,7 +47,7 @@ def build_model(type, cfg):
     if type == 'fid':
         return build_inception(cfg.dims)
     elif type == 'fvd':
-        return build_inception3d(cfg.path)
+        return build_inception3d(cfg.type, cfg.path)
     else:
         raise NotImplementedError
 
@@ -77,14 +77,17 @@ def main(cfg: DictConfig):
                 if type == 'fid' and x.dim() == 5:
                     x = x.squeeze(0).transpose(0, 1)
                 elif type == 'fvd':
-                    x = x * 2 - 1
+                    x = x * 2 - 1  # [-1, 1]
                 with torch.no_grad():
                     if type == 'fid':
                         pred = model(x)
                         pred = postprocess_i2d_pred(pred)
                     elif type == 'fvd':
-                        pred = model.extract_features(x)
-                        pred = pred.squeeze(3).squeeze(3).mean(2)
+                        if metric_cfgs.model.type == 'styleganv':
+                            pred = model(x, return_features=True)
+                        else:
+                            pred = model(x)
+
                 feats[i].append(pred.cpu().numpy())
             feats[i] = np.concatenate(feats[i], axis=0)
         fid = calculate_fid(*feats)

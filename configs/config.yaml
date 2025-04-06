@@ -10,7 +10,10 @@ metrics:
 
   - type: fvd
     model:
+      type: videogpt
       path: i3d_pretrained_400.pt
+      # type: styleganv
+      # path: i3d_torchscript.pt
     data:
       dataset:
         sequence_length: 16

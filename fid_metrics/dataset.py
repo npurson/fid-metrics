@@ -104,6 +104,7 @@ class VideoDataset(Dataset):
         for video_path in self.video_paths:
             cap = cv2.VideoCapture(video_path)
             num_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+            total_frames += num_frames
             num_sequences = (
                 (num_frames // sequence_length) if no_overlap
                 else (num_frames - sequence_length + 1))
